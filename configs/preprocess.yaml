@@ -13,9 +13,9 @@ normalise:
     l5: none
     l6: none
     l7: none
-    track_redcued.chi20: none
-    track_redcued.chi21: none
-    track_redcued.zT: none
+    track.chi20: standard
+    track.chi21: standard
+    track.zT: standard
     ps: none
     # track.inv2R: none
     # ps: none

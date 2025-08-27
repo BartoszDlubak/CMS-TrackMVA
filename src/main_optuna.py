@@ -6,18 +6,20 @@ from pathlib import Path
 
 from preprocess.preprocess import split_and_norm
 from build import get_trainer
-from tuning.optuna_configs import get_optuna_config  
+from tuning.optuna_configs import get_optuna_config
+from tuning.optuna_callback import OptunaCallbackTorch  
 from utils import load_experiment_config
 
-study_name = 'study123'
-db_path = 'dbs/optuna_new'
+study_name = 'mlp1'
+db_path = 'dbs/optuna_new.db'
 n_trials = 10
 n_startup_trials=5
-n_warmup_steps=150
-
+n_warmup_steps=10
+save_path = 'saves/xgb.pkl'
 
 # 0. Creating relevant objects
-preprocess_cfg, ml_cfg = load_experiment_config()
+preprocess_cfg, ml_cfg = load_experiment_config('configs/experiment.yaml')
+ml_cfg['train']['save_path'] = save_path
 trainer = get_trainer(ml_cfg)
 
 # 1. Loading Data
@@ -36,14 +38,20 @@ print('Number of folds: ', len(folds))
 
 X_train, X_valid, y_train, y_valid = folds[0]
 # X_test, y_test = d['test'][0]
-
+X_train = X_train.astype(np.float32).to_numpy()
+y_train = y_train.astype(np.float32).to_numpy()
+X_valid = X_valid.astype(np.float32).to_numpy()
+y_valid = y_valid.astype(np.float32).to_numpy()
 
 def objective(trial):
     # overwrite config with optuna suggestions
     tuned_cfg = get_optuna_config(ml_cfg, trial)
     trainer = get_trainer(tuned_cfg)
-
-    trainer.train(X_train, X_valid, y_train, y_valid, callbacks=[])
+    if ml_cfg['framework'] == 'torch':
+        cbs = [OptunaCallbackTorch(trial)]
+    else:
+        cbs = []
+    trainer.train(X_train, X_valid, y_train, y_valid, callbacks=cbs)
     val_score = trainer.get_loss(X_valid, y_valid)
     return val_score
 

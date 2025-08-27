@@ -77,8 +77,8 @@ def weighted_logloss_obj(preds, dmatrix):
     p = sigmoid(preds)
     grad = (p - y)                       
     hess = p * (1.0 - p)                 
-    # if w is not None and len(w) > 0:
-    #     grad *= w; hess *= w             
+    if w is not None and len(w) > 0:
+        grad *= w; hess *= w             
     return grad, hess
 
 

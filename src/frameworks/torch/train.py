@@ -13,6 +13,8 @@ class TorchTrainer():
         self.save_path=save_path
         self.save_freq = save_freq
         
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(self.device)
         self.loss_fn = WeightedCrossEntropyLoss()
         self.metric = BinaryAUROC().to(device)
         
@@ -58,7 +60,8 @@ class TorchTrainer():
         return loss
     
     def set_model(self, model):
-        self.model = model
+        print(model)
+        self.model = model.to(self.device)
         
     def set_wrapper(self, data_wrapper):
         self.data_wrapper = data_wrapper
@@ -67,9 +70,11 @@ class TorchTrainer():
 def train_base(model, tqdm_loader, criterion, optimizer, device, metric):
     model.train()
     total_loss = 0
+    count = 0
     for i, batch in enumerate(tqdm_loader):
         X, y, w = batch
         batch_size = len(X)
+        count += batch_size
         X = X.to(device)
         y = y.to(device)
         w = w.to(device) if w is not None else None
@@ -84,17 +89,19 @@ def train_base(model, tqdm_loader, criterion, optimizer, device, metric):
         optimizer.step()
         batch_loss = loss.item()
         total_loss += (batch_loss * batch_size)
-        tqdm_loader.set_postfix(loss=total_loss / ((i+1) * batch_size), roc_auc=metric.compute().item())
+        tqdm_loader.set_postfix(loss=total_loss / count, roc_auc=metric.compute().item())
     return total_loss / len(tqdm_loader)
 
     
 def eval_base(model, tqdm_loader, criterion, device, metric):
     model.eval()
     total_loss = 0
+    count = 0
     with torch.no_grad():
         for i, batch in enumerate(tqdm_loader):
             X, y, w = batch
             batch_size = len(X)
+            count += batch_size
             X = X.to(device)
             y = y.to(device)
             w = w.to(device) if w is not None else None
@@ -106,7 +113,7 @@ def eval_base(model, tqdm_loader, criterion, device, metric):
             loss = criterion(pred, y, w)
             batch_loss = loss.item()
             total_loss += (batch_loss * batch_size)
-            tqdm_loader.set_postfix(loss=total_loss / ((i+1) * batch_size), roc_auc=metric.compute().item())        
+            tqdm_loader.set_postfix(loss=total_loss / count, roc_auc=metric.compute().item())        
     return total_loss / len(tqdm_loader)
 
 
@@ -127,17 +134,6 @@ def get_scheduler(optimizer, num_epochs):
     T_max=num_epochs   # number of epochs for one cycle
     )
     return scheduler
-
-
-
-
-class OptunaCallback():
-    def __init__(self, trial):
-        self.trial = trial
-
-    def on_epoch_end(self, epoch, train_loss, valid_loss):
-        self.trial.report(valid_loss, step=epoch)
-        self.trial.report(train_loss, step=epoch)
 
 
 
