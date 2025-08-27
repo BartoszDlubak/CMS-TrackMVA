@@ -1,0 +1,27 @@
+data_split:
+  seed: 42
+  split_ratio: 0.9
+  folds: 10
+  folds_used: 1
+normalise:
+  features:
+    l0: none
+    l1: none
+    l2: none
+    l3: none
+    l4: none
+    l5: none
+    l6: none
+    l7: none
+    track_redcued.chi20: none
+    track_redcued.chi21: none
+    track_redcued.zT: none
+    ps: none
+    # track.inv2R: none
+    # ps: none
+    # chi2Bend: none
+    # numStubs: none
+    # numPS: none
+    # numGaps: none
+    # track.cot: none
+  labels: 0

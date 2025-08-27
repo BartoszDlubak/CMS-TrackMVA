@@ -1,0 +1,21 @@
+framework: xgboost
+train:
+  params:
+    max_depth: 3
+    learning_rate: 0.01
+    subsample: 0.5
+    colsample_bytree: 0.7
+    min_child_weight: 1
+    reg_alpha: 0.0001
+    reg_lambda: 0.01
+    gamma: 0.0
+    # fixed parameters
+    n_jobs: 40
+    tree_method: hist
+    objective: reg:squarederror #'binary:logistic'
+    eval_metric: rmse #auc aucpr
+    disable_default_eval_metric: 1
+  num_boost_round: 10
+  early_stopping_rounds: 50
+  save_path: 'saves/xgb.pkl'
+ 
