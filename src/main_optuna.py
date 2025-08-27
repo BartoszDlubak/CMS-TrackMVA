@@ -7,24 +7,13 @@ from pathlib import Path
 from preprocess.preprocess import split_and_norm
 from build import get_trainer
 from tuning.optuna_configs import get_optuna_config  
+from utils import load_experiment_config
 
 study_name = 'study123'
-db_path = ''
-n_trials = 2
+db_path = 'dbs/optuna_new'
+n_trials = 10
 n_startup_trials=5
 n_warmup_steps=150
-
-
-def load_yaml(path):
-    with open(path, 'r') as f:
-        return yaml.safe_load(f)
-
-def load_experiment_config(path='configs/experiment.yaml'):
-    cfg = load_yaml(path)
-    preprocess_cfg = load_yaml(f"configs/{cfg['preprocess']}")
-    ml_cfg = load_yaml(f"configs/{cfg['model']}")
-    return preprocess_cfg, ml_cfg
-
 
 
 # 0. Creating relevant objects
@@ -32,11 +21,12 @@ preprocess_cfg, ml_cfg = load_experiment_config()
 trainer = get_trainer(ml_cfg)
 
 # 1. Loading Data
-X_path = Path('data/tests/fake_data.parquet')
-y_path = Path('data/tests/fake_labels.npy')
-X = pd.read_parquet(X_path)
-y = np.load(y_path)
-y = pd.DataFrame(y)
+data_path = Path('data/mva.parquet')
+data = pd.read_parquet(data_path)
+
+cols = preprocess_cfg['normalise']['features'].keys()
+X = data[cols]
+y = data['match']
 print('Input Columns: ', X.columns)
 
 # 2. Preprocessing
@@ -61,7 +51,7 @@ if __name__ == '__main__':
     study = optuna.create_study(
         study_name=study_name,
         direction='minimize',
-        # storage=f'sqlite:///{db_path}', 
+        storage=f'sqlite:///{db_path}', 
         load_if_exists=True,
         pruner=optuna.pruners.MedianPruner(n_startup_trials=n_startup_trials, n_warmup_steps=n_warmup_steps)
     )

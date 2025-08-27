@@ -5,3 +5,4 @@ data
 src_old
 config_old*
 setup.sh
+__pycache__*

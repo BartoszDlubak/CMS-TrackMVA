@@ -12,10 +12,12 @@ train:
     # fixed parameters
     n_jobs: 40
     tree_method: hist
-    objective: reg:squarederror #'binary:logistic'
-    eval_metric: rmse #auc aucpr
+    objective: binary:logistic #reg:squarederror #
+    eval_metric: auc # aucpr
     disable_default_eval_metric: 1
-  num_boost_round: 10
-  early_stopping_rounds: 50
-  save_path: 'saves/xgb.pkl'
+  num_boost_round: 300
+  early_stopping_rounds: 100
+  L_FN: 1
+  L_FP: 1
+  
  
