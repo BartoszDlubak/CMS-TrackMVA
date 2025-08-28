@@ -1,2 +1,2 @@
 preprocess: 'preprocess.yaml'
-model: 'models/mlp.yaml'
+model: 'models/xgboost.yaml'

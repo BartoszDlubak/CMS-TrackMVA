@@ -29,10 +29,8 @@ class TorchTrainer():
         for epoch in range(1, self.epochs+1):
             tqdm_train = tqdm(train_loader, desc=f"Epoch {epoch:02d} [Train]", leave=True)
             train_loss = train_base(model, tqdm_train, self.loss_fn, optimizer, self.device, self.metric)
-            
             tqdm_valid = tqdm(valid_loader, desc=f"Epoch {epoch:02d} [Valid]", leave=True)
             valid_loss = eval_base(model, tqdm_valid, self.loss_fn, self.device, self.metric)
-            
             if scheduler:
                 scheduler.step()
             if epoch % self.save_freq:
@@ -43,12 +41,13 @@ class TorchTrainer():
                 
             train_losses.append(train_loss)
             valid_losses.append(valid_loss)
+            print()     
         torch.save(model.state_dict(), self.save_path) 
         return train_losses
     
     def evaluate(self, valid_loader):
         model = self.model
-        tqdm_valid = tqdm(valid_loader, desc=f"Epoch {1:02d} [Train]", leave=False)
+        tqdm_valid = tqdm(valid_loader, desc=f"Epoch {1:02d} [Valid]", leave=False)
         loss = eval_base(model, tqdm_valid, self.loss_fn, self.device, self.metric)
         return loss
     
@@ -90,7 +89,7 @@ def train_base(model, tqdm_loader, criterion, optimizer, device, metric):
         batch_loss = loss.item()
         total_loss += (batch_loss * batch_size)
         tqdm_loader.set_postfix(loss=total_loss / count, roc_auc=metric.compute().item())
-    return total_loss / len(tqdm_loader)
+    return (total_loss / count)
 
     
 def eval_base(model, tqdm_loader, criterion, device, metric):
@@ -113,8 +112,8 @@ def eval_base(model, tqdm_loader, criterion, device, metric):
             loss = criterion(pred, y, w)
             batch_loss = loss.item()
             total_loss += (batch_loss * batch_size)
-            tqdm_loader.set_postfix(loss=total_loss / count, roc_auc=metric.compute().item())        
-    return total_loss / len(tqdm_loader)
+            tqdm_loader.set_postfix(loss=total_loss / count, roc_auc=metric.compute().item())   
+    return (total_loss / count)
 
 
 # ------------ Optimizers and schedulers ------------:

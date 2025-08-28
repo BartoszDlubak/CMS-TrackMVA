@@ -4,5 +4,5 @@ dbs
 data
 src_old
 config_old*
-setup.sh
+setup*
 __pycache__*

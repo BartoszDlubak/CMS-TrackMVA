@@ -32,6 +32,7 @@ class TorchDataWrapper():
     
     def __call__(self, X, y):
         dataset = Dataset(X, y, self.L_FP, self.L_FN)
+        print(len(dataset))
         dataloader = DataLoader(dataset, self.batch_size, self.shuffle)
         return dataloader
     

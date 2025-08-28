@@ -10,15 +10,16 @@ from tuning.optuna_configs import get_optuna_config
 from tuning.optuna_callback import OptunaCallbackTorch  
 from utils import load_experiment_config
 
-study_name = 'mlp1'
+idx = '001'
 db_path = 'dbs/optuna_new.db'
-n_trials = 10
+n_trials = 60
 n_startup_trials=5
 n_warmup_steps=10
 save_path = 'saves/xgb.pkl'
 
 # 0. Creating relevant objects
 preprocess_cfg, ml_cfg = load_experiment_config('configs/experiment.yaml')
+study_name = ml_cfg['framework'] + f'{idx}'
 ml_cfg['train']['save_path'] = save_path
 trainer = get_trainer(ml_cfg)
 

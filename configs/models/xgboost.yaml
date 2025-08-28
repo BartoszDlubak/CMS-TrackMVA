@@ -1,23 +1,23 @@
 framework: xgboost
 train:
   params:
-    max_depth: 3
-    learning_rate: 0.01
-    subsample: 0.5
-    colsample_bytree: 0.7
-    min_child_weight: 1
-    reg_alpha: 0.0001
-    reg_lambda: 0.01
-    gamma: 0.0
+    max_depth: 8
+    learning_rate: 0.238
+    subsample: 0.7698
+    colsample_bytree: 0.815
+    min_child_weight: 2
+    reg_alpha: 0.0003
+    reg_lambda: 0.06394
+    gamma: 0.01
     # fixed parameters
     n_jobs: 40
     tree_method: hist
-    objective: binary:logistic #reg:squarederror #
+    # objective: binary:logistic #reg:squarederror #
     eval_metric: auc # aucpr
     disable_default_eval_metric: 1
-  num_boost_round: 300
+  num_boost_round: 700
   early_stopping_rounds: 100
-  L_FN: 1
-  L_FP: 1
+  L_FN: 2
+  L_FP: 2
   
  

@@ -1,20 +1,18 @@
 framework: torch
 wrapper:
   shuffle: True
-  batch_size: 2048
+  batch_size: 512
   L_FP: 1
   L_FN: 1 
 model:
   type: mlp
   input_dim: 12
-  hidden_dims: [128, 256, 256, 128]
+  hidden_dims: [64, 64, 16]
   output_dim: 2
-  # num_layers: 3
   dropout: 0.0
 train:
-  lr: 5.0e-4
+  lr: 1.0e-3
   weight_decay: 1.0e-6
-  device: cuda #cuda
+  device: cuda #cuda | cpu
   epochs: 100
-  save_path: 'saves/mlp.pkl'
   save_freq: 5

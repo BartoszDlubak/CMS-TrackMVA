@@ -13,9 +13,9 @@ normalise:
     l5: none
     l6: none
     l7: none
-    track.chi20: standard
-    track.chi21: standard
-    track.zT: standard
+    track.chi20: log_standard
+    track.chi21: log_standard
+    track.zT: standard #scale
     ps: none
     # track.inv2R: none
     # ps: none
